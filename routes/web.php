@@ -39,10 +39,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/ExternalDataUpload', [ExternalDataUploadController::class, 'destroy'])->name('externaldataupload.destroy');
 
     // JobPosting
-    Route::get('/JobPosting', [JobPostingController::class, 'index'])->name('jobposting.index');
+    // Route::get('/JobPosting', [JobPostingController::class, 'index'])->name('jobposting.index');
     Route::get('/JobPosting', [JobPostingController::class, 'edit'])->name('jobposting.edit');
-    Route::get('/JobPosting', [JobPostingController::class, 'update'])->name('jobposting.update');
-    Route::get('/JobPosting', [JobPostingController::class, 'destroy'])->name('jobposting.destroy');
+    Route::get('/JobPosting/View', [JobPostingController::class, 'view'])->name('jobposting.view');
+
+
+    // Route::get('/JobPosting', [JobPostingController::class, 'update'])->name('jobposting.update');
+    // Route::get('/JobPosting', [JobPostingController::class, 'destroy'])->name('jobposting.destroy');
 
     // Candidate
     Route::get('/Candidate', [CandidateController::class, 'index'])->name('candidate.index');    
@@ -53,8 +56,8 @@ Route::middleware('auth')->group(function () {
     // Application
     Route::get('/Application', [ApplicationController::class, 'index'])->name('application.index');
     Route::get('/Application', [ApplicationController::class, 'edit'])->name('application.edit');
-    Route::get('/Application', [ApplicationController::class, 'update'])->name('application.update');
-    Route::get('/Application', [ApplicationController::class, 'destroy'])->name('application.destroy');
+    // Route::get('/Application', [ApplicationController::class, 'update'])->name('application.update');
+    // Route::get('/Application', [ApplicationController::class, 'destroy'])->name('application.destroy');
 
     // Documents
     Route::get('/Documents', [DocumentsController::class, 'index'])->name('documents.index');

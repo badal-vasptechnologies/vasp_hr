@@ -36,6 +36,8 @@ Route::middleware('auth')->group(function () {
     // ExternalDataUpload
     Route::get('/ExternalDataUpload', [ExternalDataUploadController::class, 'index'])->name('externaldataupload.index');
     Route::get('/ExternalDataUpload', [ExternalDataUploadController::class, 'edit'])->name('externaldataupload.edit');
+    Route::get('/ExternalDataUpload/View', [ExternalDataUploadController::class, 'view'])->name('externaldataupload.view');
+
     Route::delete('/ExternalDataUpload', [ExternalDataUploadController::class, 'destroy'])->name('externaldataupload.destroy');
 
     // JobPosting

@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ExternalDataUploadController;
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\CandidateApplicationProcessController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\DashboardController;
@@ -48,6 +49,20 @@ Route::middleware('auth')->group(function () {
 
     // Route::get('/JobPosting', [JobPostingController::class, 'update'])->name('jobposting.update');
     // Route::get('/JobPosting', [JobPostingController::class, 'destroy'])->name('jobposting.destroy');
+
+
+     // CandidateApplicationProcess
+    //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'index'])->name('candidateapplicationprocess.index');    
+     Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'edit'])->name('candidateapplicationprocess.edit');
+    //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'update'])->name('candidateapplicationprocess.update');
+    //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'destroy'])->name('candidateapplicationprocess.destroy');
+
+    
+     // CandidateDocumentProcess
+    //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'index'])->name('candidateapplicationprocess.index');    
+    Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'edit'])->name('candidateapplicationprocess.edit');
+    //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'update'])->name('candidateapplicationprocess.update');
+    //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'destroy'])->name('candidateapplicationprocess.destroy');
 
     // Candidate
     Route::get('/Candidate', [CandidateController::class, 'index'])->name('candidate.index');    

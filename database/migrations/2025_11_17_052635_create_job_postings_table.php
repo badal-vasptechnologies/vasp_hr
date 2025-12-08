@@ -6,20 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('job_postings', function (Blueprint $table) {
             $table->id();
+
+            $table->string('job_title');
+            $table->string('department');
+            $table->string('location');
+            $table->text('description')->nullable();
+            $table->enum('work_mode', ['Onsite', 'Offsite']);
+            $table->date('start_date')->nullable();
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('job_postings');

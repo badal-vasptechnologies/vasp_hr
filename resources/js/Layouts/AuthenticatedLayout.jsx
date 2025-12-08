@@ -19,12 +19,12 @@ export default function AppLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false);
 
   const menuItems = [
-    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/Dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/JobPosting", icon: Briefcase, label: "Job Posting" },
     { href: "/Candidate", icon: Users, label: "Candidates" },
     { href: "/ExternalDataUpload", icon: Upload, label: "Data Upload" },
     { href: "/Reports", icon: FileText, label: "Reports" },
-    { href: "/employees", icon: Users, label: "Employees" },
+    { href: "/Employees", icon: Users, label: "Employees" },
   ];
 
   return (
@@ -36,12 +36,17 @@ export default function AppLayout({ children }) {
         }`}
       >
         {/* Background Image */}
+        
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')`,
+            background: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url("https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80")`,
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
           }}
         />
+
 
         {/* Dark overlay — makes text readable */}
         <div className="absolute inset-0 bg-black bg-opacity-60" />
@@ -50,9 +55,14 @@ export default function AppLayout({ children }) {
         <div className="relative z-10 flex flex-col h-full">
           {/* Logo + Toggle */}
           <div className="flex items-center justify-between p-4 border-b border-white border-opacity-20">
+
             {!collapsed && (
-              <h1 className="text-xl font-bold text-white tracking-wider">VASP HRMS</h1>
+              <>
+                <img src="/android-chrome-512x512.png" width="50" />
+                <h1 className="text-xl font-bold text-white tracking-wider">VASP HRMS</h1>
+              </>
             )}
+
             <button
               onClick={() => setCollapsed(!collapsed)}
               className="p-2 rounded-lg hover:bg-white hover:bg-opacity-20 text-white transition"
@@ -83,7 +93,7 @@ export default function AppLayout({ children }) {
               </div>
               {!collapsed && (
                 <div>
-                  <p className className="text-white font-semibold">{auth?.user?.name}</p>
+                  <p className="text-white font-semibold">{auth?.user?.name}</p>
                   <p className="text-gray-200 text-xs">Administrator</p>
                 </div>
               )}
@@ -122,7 +132,7 @@ export default function AppLayout({ children }) {
                 href="/logout"
                 method="post"
                 as="button"
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                className="flex items-center gap-2 px-4 py-2 text-black rounded-lg hover:bg-red-700 transition"
               >
                 <LogOut size={18} />
                 <span className="hidden sm:inline">Logout</span>

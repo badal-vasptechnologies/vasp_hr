@@ -1,36 +1,181 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import JobForm from './Partials/JobForm';
-import JobTable from './Partials/JobTable';
+import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
+import PrimaryButton from '@/Components/PrimaryButton';
+import TextInput from '@/Components/TextInput';
+import { Textarea, Transition } from '@headlessui/react';
+import { Head, useForm, router, Link } from '@inertiajs/react';
 
-// import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
+export default function EditJob({ jobposting, locations, workmodes, departments }) {
+    const { data, setData, put, processing, errors, recentlySuccessful } = useForm({
+        job_title: jobposting.job_title ?? '',
+        department: jobposting.department ?? '',
+        location: jobposting.location ?? '',
+        description: jobposting.description ?? '',
+        work_mode: jobposting.work_mode ?? '',
+        start_date: jobposting.start_date ?? '',
+    });
 
-export default function Edit({ mustVerifyEmail, status }) {
+    const updateJob = (e) => {
+        e.preventDefault();
+
+        put(route('jobposting.update', jobposting.id), {
+            preserveScroll: true,
+        });
+    };
+
     return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Job Posting
-                </h2>
-            }
-        >
-            <Head title="Job Posting" />
+        <AuthenticatedLayout>
+            <Head title="Edit Job Posting" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-500">
-                        <JobForm className="max-w-xl" />
+            <section className="max-w-3xl">
+                {/* Header */}
+                <header className="mb-6 flex justify-between items-center">
+                    <div>
+                        <h2 className="text-2xl font-semibold text-black-900 dark:text-black-100">
+                            Edit Job Posting
+                        </h2>
+                        <p className="mt-1 text-black-700 dark:text-black-300">
+                            Update job details and save your changes.
+                        </p>
                     </div>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <JobTable className="max-w-xl" />
+                    <button
+                        onClick={() => router.get(route("jobposting.index"))}
+                        className="flex items-center gap-2 px-4 py-2 bg-black-200 dark:bg-black-700 text-black-800 dark:text-black-100 rounded shadow hover:bg-black-300 dark:hover:bg-black-600"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor">
+                            <path fillRule="evenodd" d="M12.293 16.293a1 1 0 010 1.414 1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 111.414 1.414L7.414 10l4.879 4.879z" clipRule="evenodd" />
+                        </svg>
+                        Back
+                    </button>
+                </header>
+
+                {/* Form */}
+                <form onSubmit={updateJob} className="space-y-6">
+                    {/* Job Title */}
+                    <div>
+                        <InputLabel htmlFor="job_title" value="Job Title" />
+                        <TextInput
+                            id="job_title"
+                            value={data.job_title}
+                            onChange={(e) => setData('job_title', e.target.value)}
+                            className="mt-1 block w-full"
+                            required
+                        />
+                        <InputError message={errors.job_title} className="mt-2" />
                     </div>
 
-                    {/* <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <DeleteUserForm className="max-w-xl" />
-                    </div> */}
-                </div>
-            </div>
+                    {/* Department */}
+                    <div>
+                        <InputLabel htmlFor="department" value="Department" />
+
+                        <select
+                            id="department"
+                            value={data.department}
+                            onChange={(e) => setData('department', e.target.value)}
+                            className="mt-1 block w-full"
+                            required
+                        >
+                            <option value="">Select Department</option>
+                            {departments.map((d) => (
+                                <option key={d.id} value={d.name}>
+                                    {d.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        <InputError message={errors.department} className="mt-2" />
+                    </div>
+
+                    {/* Location */}
+                    <div>
+                        <InputLabel htmlFor="location" value="Location" />
+
+                        <select
+                            id="location"
+                            value={data.location}
+                            onChange={(e) => setData('location', e.target.value)}
+                            className="mt-1 block w-full"
+                            required
+                        >
+                            <option value="">Select Location</option>
+                            {locations.map((l) => (
+                                <option key={l.id} value={l.name}>
+                                    {l.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        <InputError message={errors.location} className="mt-2" />
+                    </div>
+
+                    {/* Work Mode */}
+                    <div>
+                        <InputLabel htmlFor="work_mode" value="Work Mode" />
+
+                        <select
+                            id="work_mode"
+                            value={data.work_mode}
+                            onChange={(e) => setData('work_mode', e.target.value)}
+                            className="mt-1 block w-full"
+                            required
+                        >
+                            <option value="">Select Work Mode</option>
+                            {workmodes.map((wm) => (
+                                <option key={wm.id} value={wm.name}>
+                                    {wm.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        <InputError message={errors.work_mode} className="mt-2" />
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                        <InputLabel htmlFor="description" value="Description" />
+                        <Textarea
+                            id="description"
+                            value={data.description}
+                            onChange={(e) => setData('description', e.target.value)}
+                            className="mt-1 block w-full"
+                        />
+                        <InputError message={errors.description} className="mt-2" />
+                    </div>
+
+                    {/* Start Date */}
+                    <div>
+                        <InputLabel htmlFor="start_date" value="Post Date" />
+                        <input
+                            type="date"
+                            id="start_date"
+                            value={data.start_date}
+                            onChange={(e) => setData('start_date', e.target.value)}
+                            className="mt-1 block w-full"
+                            required
+                        />
+                        <InputError message={errors.start_date} className="mt-2" />
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex justify-end space-x-2 mt-4">
+                        <Link
+                            href={route("jobposting.index")}
+                            className="px-4 py-2 bg-gray-400 text-white rounded"
+                        >
+                            Cancel
+                        </Link>
+
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-blue-600 text-white rounded"
+                        >
+                            Update Job
+                        </button>
+                    </div>
+                </form>
+            </section>
         </AuthenticatedLayout>
     );
 }

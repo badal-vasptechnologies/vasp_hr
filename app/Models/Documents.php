@@ -9,4 +9,10 @@ class Documents extends Model
 {
     /** @use HasFactory<\Database\Factories\DocumentsFactory> */
     use HasFactory;
+    protected $fillable = [
+        'candidate_id',
+        'file_path',
+        'file_type',
+        'status'
+    ];
 }

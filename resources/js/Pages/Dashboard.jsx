@@ -111,7 +111,7 @@ export default function Dashboard() {
                         </Link>
 
                         {/* 5. Employee Management */}
-                        <Link href="" className="group">
+                        <Link href="#" className="group">
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
                                 <div className="p-6 text-center">
                                     <div className="w-16 h-16 mx-auto mb-4 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
@@ -124,7 +124,7 @@ export default function Dashboard() {
                         </Link>
 
                         {/* 6. Attendance & Leave */}
-                        <Link href="" className="group">
+                        <Link href="#" className="group">
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
                                 <div className="p-6 text-center">
                                     <div className="w-16 h-16 mx-auto mb-4 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center">
@@ -137,7 +137,7 @@ export default function Dashboard() {
                         </Link>
 
                         {/* 7. Payroll */}
-                        <Link href="" className="group">
+                        <Link href="#" className="group">
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
                                 <div className="p-6 text-center">
                                     <div className="w-16 h-16 mx-auto mb-4 bg-pink-100 dark:bg-pink-900 rounded-full flex items-center justify-center">
@@ -150,7 +150,7 @@ export default function Dashboard() {
                         </Link>
 
                         {/* 8. Performance Reviews */}
-                        <Link href="" className="group">
+                        <Link href="#" className="group">
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
                                 <div className="p-6 text-center">
                                     <div className="w-16 h-16 mx-auto mb-4 bg-amber-100 dark:bg-amber-900 rounded-full flex items-center justify-center">

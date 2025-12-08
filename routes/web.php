@@ -23,7 +23,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
+Route::get('/Dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -42,14 +42,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/ExternalDataUpload', [ExternalDataUploadController::class, 'destroy'])->name('externaldataupload.destroy');
 
     // JobPosting
-    // Route::get('/JobPosting', [JobPostingController::class, 'index'])->name('jobposting.index');
-    Route::get('/JobPosting', [JobPostingController::class, 'edit'])->name('jobposting.edit');
-    Route::get('/JobPosting/View', [JobPostingController::class, 'view'])->name('jobposting.view');
-
-
-    // Route::get('/JobPosting', [JobPostingController::class, 'update'])->name('jobposting.update');
-    // Route::get('/JobPosting', [JobPostingController::class, 'destroy'])->name('jobposting.destroy');
-
+    Route::get('/JobPosting', [JobPostingController::class, 'index'])->name('jobposting.index');
+    Route::get('/JobPosting/Create', [JobPostingController::class, 'create'])->name('jobposting.create');
+    Route::post('/JobPosting', [JobPostingController::class, 'store'])->name('jobposting.store');
+    Route::put('/JobPosting/{jobPosting}', [JobPostingController::class, 'update'])->name('jobposting.update');
+    Route::get('/JobPosting/{jobposting}', [JobPostingController::class, 'show'])->name('jobposting.show');
+    Route::get('/JobPosting/{jobposting}/Edit', [JobPostingController::class, 'edit'])->name('jobposting.edit');
+    Route::delete('/JobPosting/{jobposting}', [JobPostingController::class, 'destroy'])->name('jobposting.destroy');
+    Route::post('/JobPosting/{jobposting}/Update-Status', [JobPostingController::class, 'updateStatus'])->name('jobposting.updateStatus');
 
      // CandidateApplicationProcess
     //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'index'])->name('candidateapplicationprocess.index');    
@@ -65,10 +65,14 @@ Route::middleware('auth')->group(function () {
     //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'destroy'])->name('candidateapplicationprocess.destroy');
 
     // Candidate
-    Route::get('/Candidate', [CandidateController::class, 'index'])->name('candidate.index');    
-    Route::get('/Candidate', [CandidateController::class, 'edit'])->name('candidate.edit');
-    Route::get('/Candidate', [CandidateController::class, 'update'])->name('candidate.update');
-    Route::get('/Candidate', [CandidateController::class, 'destroy'])->name('candidate.destroy');
+    Route::get('/Candidate', [CandidateController::class, 'index'])->name('candidate.index');
+    Route::get('/Candidate/Create', [CandidateController::class, 'create'])->name('candidate.create');
+    Route::post('/Candidate', [CandidateController::class, 'store'])->name('candidate.store');
+    Route::put('/Candidate/{candidate}', [CandidateController::class, 'update'])->name('candidate.update');
+    Route::get('/Candidate/{candidate}', [CandidateController::class, 'show'])->name('candidate.show');
+    Route::get('/Candidate/{candidate}/Edit', [CandidateController::class, 'edit'])->name('candidate.edit');
+    Route::delete('/Candidate/{candidate}', [CandidateController::class, 'destroy'])->name('candidate.destroy');
+    Route::post('/Candidate/{candidate}/Update-Status', [CandidateController::class, 'updateStatus'])->name('candidate.updateStatus');
 
     // Application
     Route::get('/Application', [ApplicationController::class, 'index'])->name('application.index');
@@ -84,6 +88,9 @@ Route::middleware('auth')->group(function () {
 
     // Reports
     Route::get('/Reports', [ReportsController::class, 'index'])->name('reports.index');
+
+    Route::apiResource('departments', DepartmentController::class);
+
 });
 
 require __DIR__.'/auth.php';

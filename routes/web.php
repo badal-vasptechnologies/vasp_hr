@@ -9,37 +9,47 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\DocumentsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\SettingController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+
+
+// Welcome page
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
     ]);
 });
 
-Route::get('/Dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
+// Protected routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Admin dashboard
+    Route::get('/Dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+});
 
 Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/reset-password', [ProfileController::class, 'resetPassword'])->name('profile.resetpassword');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
     // ExternalDataUpload
-    Route::get('/ExternalDataUpload', [ExternalDataUploadController::class, 'index'])->name('externaldataupload.index');
-    Route::get('/ExternalDataUpload', [ExternalDataUploadController::class, 'edit'])->name('externaldataupload.edit');
-    Route::get('/ExternalDataUpload/View', [ExternalDataUploadController::class, 'view'])->name('externaldataupload.view');
-
-    Route::delete('/ExternalDataUpload', [ExternalDataUploadController::class, 'destroy'])->name('externaldataupload.destroy');
+    Route::prefix('External-Upload')->group(function () {
+        Route::get('/Import', [ExternalDataUploadController::class, 'importPage'])->name('candidate.import.page');
+        Route::post('/Import', [ExternalDataUploadController::class, 'import'])->name('candidate.import');
+    });
 
     // JobPosting
     Route::get('/JobPosting', [JobPostingController::class, 'index'])->name('jobposting.index');
@@ -73,6 +83,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/Candidate/{candidate}/Edit', [CandidateController::class, 'edit'])->name('candidate.edit');
     Route::delete('/Candidate/{candidate}', [CandidateController::class, 'destroy'])->name('candidate.destroy');
     Route::post('/Candidate/{candidate}/Update-Status', [CandidateController::class, 'updateStatus'])->name('candidate.updateStatus');
+
+
+    // Setting
+    Route::get('/Settings', [SettingController::class, 'index'])->name('setting.index');
+    Route::post('/Settings/Origin', [SettingController::class, 'storeOrigin'])->name('setting.origin.store');
+    Route::delete('/Settings/Origin/{id}', [SettingController::class, 'deleteOrigin'])->name('setting.origin.delete');
+    Route::put('/Settings/Origin/{id}', [SettingController::class, 'updateOrigin'])
+    ->name('setting.origin.update');
+
+    // DEPARTMENTS
+    Route::post('/Settings/Department', [SettingController::class, 'storeDepartment'])->name('setting.department.store');
+    Route::delete('/Settings/Department/{id}', [SettingController::class, 'deleteDepartment'])->name('setting.department.delete');
+
+    // LOCATIONS
+    Route::post('/Settings/Location', [SettingController::class, 'storeLocation'])->name('setting.location.store');
+    Route::delete('/Settings/Location/{id}', [SettingController::class, 'deleteLocation'])->name('setting.location.delete');
+
+    // WORK MODES
+    Route::post('/Settings/Workmode', [SettingController::class, 'storeWorkMode'])->name('setting.workmode.store');
+    Route::delete('/Settings/Workmode/{id}', [SettingController::class, 'deleteWorkMode'])->name('setting.workmode.delete');
 
     // Application
     Route::get('/Application', [ApplicationController::class, 'index'])->name('application.index');

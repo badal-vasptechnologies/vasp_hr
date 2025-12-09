@@ -11,77 +11,50 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response; 
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\CandidateImport;
+use Illuminate\Support\Facades\Log;
+
 class ExternalDataUploadController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function importPage()
     {
-        //
+        return Inertia::render('ExternalDataUpload/Import');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function import(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreExternalDataUploadRequest $request)
-    {
-        //
-    }
+        try {
+            Excel::import(new CandidateImport, $request->file('file'));
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(ExternalDataUpload $externalDataUpload)
-    {
-        //
-    }
+            return redirect()->back()->with('success', 'Candidates imported successfully!');
+        } catch (\Exception $e) {
+            Log::error($e);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Request $request)
+            return redirect()->back()->with('error', 'Something went wrong during import.');
+        }
+    }
+    public function importFromApi()
     {
-        //
-          // dd(1);
-            return Inertia::render('ExternalDataUpload/Edit', [
-                'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-                'status' => session('status'),
+        $response = Http::get('https://example.com/api/candidates');
+
+        foreach ($response->json() as $item) {
+            Candidate::create([
+                'name'          => $item['name'],
+                'email'         => $item['email'],
+                'mobile'        => $item['mobile'],
+                'address'       => $item['address'] ?? null,
+                'status'        => $item['status'],
+                'date_of_apply' => $item['date_of_apply'],
+                'origin_id'     => $item['origin_id'],
             ]);
-       
-    }
-    public function view(Request $request)
-    {
-        //
-          // dd(1);
-            return Inertia::render('ExternalDataUpload/View', [
-                'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-                'status' => session('status'),
-            ]);
-       
+        }
+
+        return back()->with('success', 'API Candidates imported successfully!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateExternalDataUploadRequest $request, ExternalDataUpload $externalDataUpload)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ExternalDataUpload $externalDataUpload)
-    {
-        //
-    }
 }

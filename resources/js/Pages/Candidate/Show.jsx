@@ -5,9 +5,7 @@ export default function Show({ candidate }) {
     return (
         <AuthenticatedLayout>
             <Head title="Candidate Details" />
-
-            <div className="max-w-3xl p-6 bg-white shadow rounded-lg">
-
+            <section className="max-w-4xl mt-6 space-y-6">
                 <header className="mb-6 flex justify-between items-center">
                     <div>
                         <h2 className="text-2xl font-semibold text-black-900 dark:text-black-100">
@@ -36,22 +34,21 @@ export default function Show({ candidate }) {
                         Back
                     </button>
                 </header>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+                <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <h4 className="font-semibold text-gray-700">Name</h4>
-                        <p>{candidate.name}</p>
+                        <p className="text-gray-700 dark:text-gray-300">{candidate.name}</p>
                     </div>
 
                     <div>
                         <h4 className="font-semibold text-gray-700">Email</h4>
-                        <p>{candidate.email}</p>
+                       <p className="text-gray-700 dark:text-gray-300">{candidate.email}</p>
                     </div>
 
                     <div>
                         <h4 className="font-semibold text-gray-700">Mobile</h4>
-                        <p>{candidate.mobile}</p>
+                        <p className="text-gray-700 dark:text-gray-300">{candidate.mobile}</p>
                     </div>
 
                     <div>
@@ -68,21 +65,22 @@ export default function Show({ candidate }) {
 
                     <div>
                         <h4 className="font-semibold text-gray-700">Date of Apply</h4>
-                        <p>{candidate.date_of_apply}</p>
+                        <p className="text-gray-700 dark:text-gray-300">{candidate.date_of_apply}</p>
                     </div>
 
                     <div>
                         <h4 className="font-semibold text-gray-700">Origin of Application</h4>
-                        <p>{candidate.origin?.name ?? "—"}</p>
+                        <p className="text-gray-700 dark:text-gray-300">{candidate.origin?.name ?? "—"}</p>
                     </div>
 
                     <div className="md:col-span-2">
                         <h4 className="font-semibold text-gray-700">Address</h4>
-                        <p>{candidate.address}</p>
+                        <p className="text-gray-700 dark:text-gray-300">{candidate.address}</p>
                     </div>
 
                 </div>
             </div>
+            </section>
         </AuthenticatedLayout>
     );
 }

@@ -22,6 +22,14 @@ class ProfileController extends Controller
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
+    }    
+
+    public function resetPassword(Request $request): Response
+    {
+        return Inertia::render('Profile/Reset', [
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => session('status'),
+        ]);
     }
 
     /**
@@ -36,7 +44,6 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
-
         return Redirect::route('profile.edit');
     }
 
@@ -50,9 +57,7 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
-
         Auth::logout();
-
         $user->delete();
 
         $request->session()->invalidate();

@@ -25,34 +25,37 @@ export default function Dashboard() {
         >
             <Head title="Dashboard" />
             <div className="">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    {/* --- Number Analysis Cards --- */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
-                            <h3 className="text-3xl font-bold text-gray-800 dark:text-white">150</h3>
-                            <p className="mt-2 text-gray-600 dark:text-gray-300">Total Employees</p>
-                        </div>
+                {/* --- Recruitment KPI Cards --- */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
-                        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
-                            <h3 className="text-3xl font-bold text-gray-800 dark:text-white">92%</h3>
-                            <p className="mt-2 text-gray-600 dark:text-gray-300">Attendance Rate</p>
-                        </div>
-
-                        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
-                            <h3 className="text-3xl font-bold text-gray-800 dark:text-white">38</h3>
-                            <p className="mt-2 text-gray-600 dark:text-gray-300">Pending Leave Requests</p>
-                        </div>
-
-                        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
-                            <h3 className="text-3xl font-bold text-gray-800 dark:text-white">₹12.4L</h3>
-                            <p className="mt-2 text-gray-600 dark:text-gray-300">Monthly Payroll</p>
-                        </div>
+                    {/* Total Job Postings */}
+                    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
+                        <h3 className="text-3xl font-bold text-gray-800 dark:text-white">1</h3>
+                        <p className="mt-2 text-gray-600 dark:text-gray-300">Total Job Postings</p>
                     </div>
+
+                    {/* Total Candidates */}
+                    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
+                        <h3 className="text-3xl font-bold text-gray-800 dark:text-white">2</h3>
+                        <p className="mt-2 text-gray-600 dark:text-gray-300">Total Candidates Applied</p>
+                    </div>
+
+                    {/* Shortlisted */}
+                    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
+                        <h3 className="text-3xl font-bold text-gray-800 dark:text-white">3</h3>
+                        <p className="mt-2 text-gray-600 dark:text-gray-300">Shortlisted Candidates</p>
+                    </div>
+
+                    {/* Conversion Rate */}
+                    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow text-center">
+                        <h3 className="text-3xl font-bold text-gray-800 dark:text-white">30%</h3>
+                        <p className="mt-2 text-gray-600 dark:text-gray-300">Hiring Conversion Rate</p>
+                    </div>
+
                 </div>
             </div>
-
             <div className="">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="">
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-8">
                         HR Management Modules
                     </h2>
@@ -106,58 +109,6 @@ export default function Dashboard() {
                                     </div>
                                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Reports</h3>
                                     <p className="text-sm text-gray-500 mt-2">Analytics & insights</p>
-                                </div>
-                            </div>
-                        </Link>
-
-                        {/* 5. Employee Management */}
-                        <Link href="#" className="group">
-                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
-                                <div className="p-6 text-center">
-                                    <div className="w-16 h-16 mx-auto mb-4 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
-                                        <UserCheck className="w-8 h-8 text-orange-600 dark:text-orange-300" />
-                                    </div>
-                                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Employees</h3>
-                                    <p className="text-sm text-gray-500 mt-2">Manage staff records</p>
-                                </div>
-                            </div>
-                        </Link>
-
-                        {/* 6. Attendance & Leave */}
-                        <Link href="#" className="group">
-                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
-                                <div className="p-6 text-center">
-                                    <div className="w-16 h-16 mx-auto mb-4 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center">
-                                        <Calendar className="w-8 h-8 text-teal-600 dark:text-teal-300" />
-                                    </div>
-                                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Attendance</h3>
-                                    <p className="text-sm text-gray-500 mt-2">Track leaves & clock-ins</p>
-                                </div>
-                            </div>
-                        </Link>
-
-                        {/* 7. Payroll */}
-                        <Link href="#" className="group">
-                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
-                                <div className="p-6 text-center">
-                                    <div className="w-16 h-16 mx-auto mb-4 bg-pink-100 dark:bg-pink-900 rounded-full flex items-center justify-center">
-                                        <DollarSign className="w-8 h-8 text-pink-600 dark:text-pink-300" />
-                                    </div>
-                                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Payroll</h3>
-                                    <p className="text-sm text-gray-500 mt-2">Salary & deductions</p>
-                                </div>
-                            </div>
-                        </Link>
-
-                        {/* 8. Performance Reviews */}
-                        <Link href="#" className="group">
-                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700">
-                                <div className="p-6 text-center">
-                                    <div className="w-16 h-16 mx-auto mb-4 bg-amber-100 dark:bg-amber-900 rounded-full flex items-center justify-center">
-                                        <TrendingUp className="w-8 h-8 text-amber-600 dark:text-amber-300" />
-                                    </div>
-                                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Performance</h3>
-                                    <p className="text-sm text-gray-500 mt-2">Reviews & appraisals</p>
                                 </div>
                             </div>
                         </Link>

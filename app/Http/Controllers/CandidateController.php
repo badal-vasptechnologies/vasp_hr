@@ -48,15 +48,29 @@ class CandidateController extends Controller
         );
 
         // Pagination
-        $candidates = $query->paginate(10)->withQueryString();
+        $candidates = $query->paginate(10)->through(function ($c) {
+            $c->is_new = $c->created_at->gt(now()->subDays(1));
+            return $c;
+        });
+
+        $totalCount = Candidate::count(); // ALL records
+        $filteredCount = $query->count(); // After applying filters
+        $statusCounts = Candidate::select('status')
+        ->selectRaw('COUNT(*) as count')
+        ->groupBy('status')
+        ->pluck('count', 'status');
+
+        if ($request->sort_date === 'new') {
+            $query->orderBy('created_at', 'desc');
+        } elseif ($request->sort_date === 'old') {
+            $query->orderBy('created_at', 'asc');
+        }
 
         return Inertia::render('Candidate/Index', [
             'candidates' => $candidates,
-
             // Dropdown filters
             'statuses' => ['Pending', 'Shortlisted', 'Rejected', 'Selected'],
             'origins' => Origin::all(),
-
             // Active filters for UI
             'filters' => $request->only([
                 'search',
@@ -65,6 +79,9 @@ class CandidateController extends Controller
                 'sort_by',
                 'sort_order'
             ]),
+            'totalCount' => $totalCount,
+            'filteredCount' => $filteredCount,
+            'statusCounts' => $statusCounts
         ]);
     }
 

@@ -39,12 +39,15 @@ class JobPostingController extends Controller
         $query->orderBy($request->sort_by ?? 'id', $request->sort_order ?? 'desc');
 
         $jobpostings = $query->paginate(10)->withQueryString();
-
+        $totalCount = JobPosting::count(); // ALL records
+        $filteredCount = $query->count(); // After applying filters
         return Inertia::render('JobPosting/Index', [
             'jobposting' => $jobpostings,
             'departments' => Department::all(),
             'locations' => Location::all(),
             'workmodes' => Workmode::all(),
+            'totalCount' => $totalCount,
+            'filteredCount' => $filteredCount,
             'filters' => $request->only([
                 'search', 'department', 'location', 'work_mode', 'sort_by', 'sort_order'
             ]),

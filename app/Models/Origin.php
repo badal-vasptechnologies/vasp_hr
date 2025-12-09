@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Origin extends Model
 {
-    protected $fillable = ['name'];
+   protected $fillable = [
+	    'name',
+	    'api_endpoint',
+	    'api_username',
+	    'api_password',
+	    'api_key',
+	];
 
     public function candidates()
 	{

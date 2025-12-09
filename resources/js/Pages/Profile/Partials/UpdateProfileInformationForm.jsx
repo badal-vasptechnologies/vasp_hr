@@ -1,5 +1,5 @@
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import InputLabelLogin from '@/Components/InputLabelLogin';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
@@ -38,7 +38,7 @@ export default function UpdateProfileInformation({
 
             <form onSubmit={submit} className="mt-6 space-y-6">
                 <div>
-                    <InputLabel htmlFor="name" value="Name" />
+                    <InputLabelLogin htmlFor="name" value="Name" />
 
                     <TextInput
                         id="name"
@@ -54,7 +54,7 @@ export default function UpdateProfileInformation({
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                    <InputLabelLogin htmlFor="email" value="Email" />
 
                     <TextInput
                         id="email"

@@ -15,17 +15,10 @@ export default function Welcome() {
 
                     <div className="flex space-x-4">
                         <Link
-                            href="/login?role=hr"
+                            href="/login"
                             className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition"
                         >
-                            HR Login
-                        </Link>
-
-                        <Link
-                            href="/login?role=admin"
-                            className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition"
-                        >
-                            Admin Login
+                            Login
                         </Link>
                     </div>
                 </header>

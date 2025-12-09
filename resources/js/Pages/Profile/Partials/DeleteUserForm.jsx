@@ -1,6 +1,6 @@
 import DangerButton from '@/Components/DangerButton';
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import InputLabelLogin from '@/Components/InputLabelLogin';
 import Modal from '@/Components/Modal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
@@ -78,7 +78,7 @@ export default function DeleteUserForm({ className = '' }) {
                     </p>
 
                     <div className="mt-6">
-                        <InputLabel
+                        <InputLabelLogin
                             htmlFor="password"
                             value="Password"
                             className="sr-only"

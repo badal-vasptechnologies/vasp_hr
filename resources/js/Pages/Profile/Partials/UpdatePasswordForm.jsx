@@ -1,5 +1,5 @@
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import InputLabelLogin from '@/Components/InputLabelLogin';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
@@ -59,7 +59,7 @@ export default function UpdatePasswordForm({ className = '' }) {
 
             <form onSubmit={updatePassword} className="mt-6 space-y-6">
                 <div>
-                    <InputLabel
+                    <InputLabelLogin
                         htmlFor="current_password"
                         value="Current Password"
                     />
@@ -83,7 +83,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="New Password" />
+                    <InputLabelLogin htmlFor="password" value="New Password" />
 
                     <TextInput
                         id="password"
@@ -99,7 +99,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div>
-                    <InputLabel
+                    <InputLabelLogin
                         htmlFor="password_confirmation"
                         value="Confirm Password"
                     />

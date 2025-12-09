@@ -1,7 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
+import "material-icons/iconfont/material-icons.css";
 
-export default function Index({ candidates, filters, origins, statuses }) {
+export default function Index({ candidates, filters, origins, statuses, totalCount, filteredCount, statusCounts }) {
 
     const filterNow = (newFilters = {}) => {
         router.get(route("candidate.index"), {
@@ -27,25 +28,35 @@ export default function Index({ candidates, filters, origins, statuses }) {
         <AuthenticatedLayout>
             <Head title="Candidates" />
 
-            {/* HEADER */}
+           {/* HEADER */}
             <div className="flex justify-between items-center mb-4 p-4 bg-white shadow rounded-lg">
                 <h2 className="text-xl font-semibold text-black">
                     Candidate List
                 </h2>
 
-                <button
-                    onClick={() => router.get(route("candidate.create"))}
-                    className="px-4 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700"
-                >
-                    + Add Candidate
-                </button>
+                {/* BUTTONS ON RIGHT */}
+                <div className="flex items-center space-x-3">
+                    <button
+                        onClick={() => router.get(route("candidate.create"))}
+                        className="px-4 py-2 border border-green-600 text-green rounded shadow hover:bg-green-700"
+                    >
+                        + Add Candidate
+                    </button>
+
+                    <button
+                        onClick={() => router.get(route("candidate.import.page"))}
+                        className="px-4 py-2 border border-blue-600 text-green rounded shadow hover:bg-blue-700"
+                    >
+                        + Import
+                    </button>
+                </div>
             </div>
 
             <div className="py-6">
 
                 {/* FILTER AREA */}
                 <div className="mb-4 p-4 bg-white shadow rounded-lg">
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
 
                         {/* Search */}
                         <input
@@ -84,21 +95,62 @@ export default function Index({ candidates, filters, origins, statuses }) {
                             <option value="">All Origins</option>
 
                             {origins.map((origin) => (
-                                <option key={origin.id} value={origin.name}>
+                                <option key={origin.id} value={origin.id}>
                                     {origin.name}
                                 </option>
                             ))}
                         </select>
 
+                        <select
+                            className="border rounded p-2 w-full"
+                            value={filters.age || ""}
+                            onChange={(e) => filterNow({ age: e.target.value })}
+                        >
+                            <option value="">All Records</option>
+                            <option value="new">New (Last 7 Days)</option>
+                            <option value="old">Old</option>
+                        </select>
+
                         {/* Reset */}
                         <button
                             onClick={resetFilters}
-                            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            className="px-4 py-2 border border-gray-600 rounded hover:bg-gray-400 transition"
                         >
                             Reset
                         </button>
-
                     </div>
+                    
+                </div>
+                <div className="mb-4 p-4 bg-white shadow rounded-lg flex items-center justify-between">
+    
+                    {/* LEFT SIDE — TOTAL + FILTERED */}
+                    <div className="flex items-center space-x-8">
+                        <div>
+                            <p className="text-gray-500 text-sm">
+                                Total Candidates: <strong>{totalCount}</strong>
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-gray-500 text-sm">
+                                Showing (After Filters): <strong>{filteredCount}</strong>
+                            </p>
+                        </div>
+                        {Object.entries(statusCounts).map(([status, count]) => (
+                        <div>
+                            <p className="text-gray-500 text-sm">
+                                {status}: {count}
+                            </p>
+                        </div>
+                        ))}
+                    </div>
+
+                    <button
+                        onClick={() => router.get(route("candidate.import"))}
+                        className="px-4 py-2 border border-blue-600 text-blue-600 rounded shadow-sm hover:bg-blue-600 hover:text-white transition"
+                    >
+                        Process Applications
+                    </button>
+
                 </div>
 
                 {/* TABLE */}
@@ -162,7 +214,15 @@ export default function Index({ candidates, filters, origins, statuses }) {
                             {candidates.data.map((c) => (
                                 <tr key={c.id} className="hover:bg-gray-50">
                                     <td className="p-3 border border-gray-300">{c.id}</td>
-                                    <td className="p-3 border border-gray-300">{c.name}</td>
+                                    <td className="p-3 border border-gray-300">
+                                        {c.name}
+
+                                        {c.is_new && (
+                                            <span className="ml-2 px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
+                                                NEW
+                                            </span>
+                                        )}
+                                    </td>
                                     <td className="p-3 border border-gray-300">{c.email}</td>
                                     <td className="p-3 border border-gray-300">{c.mobile}</td>
 
@@ -186,7 +246,6 @@ export default function Index({ candidates, filters, origins, statuses }) {
 
                                     <td className="p-3 border border-gray-300">{c.origin?.name || "—"}</td>
 
-
                                     <td className="p-3 border border-gray-300">
                                         <div className="flex items-center space-x-4">
 
@@ -194,21 +253,21 @@ export default function Index({ candidates, filters, origins, statuses }) {
                                                 href={route("candidate.show", c.id)}
                                                 className="text-blue-600 hover:underline"
                                             >
-                                                View
+                                                <span className="material-icons-outlined" style={{ fontSize: "18px" }}>visibility</span>
                                             </Link>
 
                                             <Link
                                                 href={route("candidate.edit", c.id)}
                                                 className="text-green-600 hover:underline"
                                             >
-                                                Edit
+                                                <span className="material-icons-outlined" style={{ fontSize: "18px" }}>edit</span>
                                             </Link>
 
                                             <button
                                                 onClick={() => deleteCandidate(c.id)}
                                                 className="text-red-600 hover:underline"
                                             >
-                                                Delete
+                                                <span className="material-icons-outlined" style={{ fontSize: "18px" }}>delete</span>
                                             </button>
 
                                         </div>
@@ -235,7 +294,7 @@ export default function Index({ candidates, filters, origins, statuses }) {
                         />
                     ))}
                 </div>
-
+                
             </div>
         </AuthenticatedLayout>
     );

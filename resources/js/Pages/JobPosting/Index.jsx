@@ -1,7 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
+import "material-icons/iconfont/material-icons.css";
 
-export default function Index({ jobposting, filters, departments, locations, workmodes }) {
+export default function Index({ jobposting, filters, departments, locations, workmodes, totalCount, filteredCount }) {
 
     const filterNow = (newFilters = {}) => {
         router.get(route("jobposting.index"), {
@@ -119,7 +120,14 @@ export default function Index({ jobposting, filters, departments, locations, wor
 
                     </div>
                 </div>
-
+                <div className="mb-4 p-4 bg-white shadow rounded-lg flex items-center space-x-8">
+                    <div>
+                        <p className="text-gray-500 text-sm">Total Records: <strong>{totalCount}</strong></p>
+                    </div>
+                    <div>
+                        <p className="text-gray-500 text-sm">Showing (After Filters): <strong>{filteredCount}</strong></p>
+                    </div>
+                </div>
                 {/* TABLE */}
                 <div className="overflow-x-auto bg-white shadow rounded-lg p-4">
                     <table className="w-full text-left border border-gray-300 border-collapse">
@@ -263,7 +271,7 @@ export default function Index({ jobposting, filters, departments, locations, wor
                                                 href={route("jobposting.show", job.id)}
                                                 className="text-blue-600 hover:underline"
                                             >
-                                                View
+                                                <span className="material-icons-outlined" style={{ fontSize: "18px" }}>visibility</span>
                                             </Link>
 
                                             {/* EDIT */}
@@ -271,7 +279,7 @@ export default function Index({ jobposting, filters, departments, locations, wor
                                                 href={route("jobposting.edit", job.id)}
                                                 className="text-green-600 hover:underline"
                                             >
-                                                Edit
+                                                <span className="material-icons-outlined" style={{ fontSize: "18px" }}>edit</span>
                                             </Link>
 
                                             {/* DELETE */}
@@ -279,15 +287,15 @@ export default function Index({ jobposting, filters, departments, locations, wor
                                                 onClick={() => deleteJob(job.id)}
                                                 className="text-red-600 hover:underline"
                                             >
-                                                Delete
+                                                <span className="material-icons-outlined" style={{ fontSize: "18px" }}>delete</span>
                                             </button>
 
                                             {/* STATUS UPDATE */}
                                             <button
                                                 onClick={() => updateStatus(job.id)}
-                                                className="px-2 py-1 bg-indigo-500 text-white text-xs rounded hover:bg-indigo-600"
+                                                className="hover:underline"
                                             >
-                                                Update Status
+                                                <span className="material-icons-outlined" style={{ fontSize: "18px" }}>update</span>
                                             </button>
 
                                         </div>

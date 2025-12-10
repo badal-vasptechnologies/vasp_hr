@@ -1,8 +1,8 @@
 import { Head, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function Index({ origins, departments, locations, workModes }) {
+export default function Index({ origins, departments, locations, workModes, settings }) {
 
     // Read tab from URL query if exists
     const urlTab = new URLSearchParams(window.location.search).get("tab");
@@ -42,6 +42,10 @@ export default function Index({ origins, departments, locations, workModes }) {
         }
     };
 
+    const handleUpdate = (id, updatedData) => {
+        setOrigins(origins.map(i => i.id === id ? updatedData : i));
+    };
+
     return (
         <AuthenticatedLayout>
             <Head title="Settings" />
@@ -78,6 +82,14 @@ export default function Index({ origins, departments, locations, workModes }) {
                     >
                         Work Modes
                     </button>
+
+                    <button
+                        className={`pb-2 ${activeTab === "settings" ? "border-b-2 border-blue-600 font-bold" : "text-gray-600"}`}
+                        onClick={() => changeTab("settings")}
+                    >
+                        Configuration
+                    </button>
+
                 </div>
 
                 {/* ---------------- CONTENT ---------------- */}
@@ -136,6 +148,25 @@ export default function Index({ origins, departments, locations, workModes }) {
                             onDelete={(id) => deleteItem("setting.workmode.delete", id)}
                         />
                     )}
+
+                    {activeTab === "settings" && (
+                        <SettingConfigBox
+                            items={settings}
+                            onAdd={(data) =>
+                                router.post(route("setting.config.store"), data)
+                            }
+                            onUpdate={(id, data) =>
+                                router.put(route("setting.config.update", id), data)
+                            }
+                            onDelete={(id) =>
+                                router.delete(route("setting.config.delete", id))
+                            }
+                            onStatus={(id) =>
+                                router.patch(route("setting.config.status", id))
+                            }
+                        />
+                    )}
+
                 </div>
             </div>
         </AuthenticatedLayout>
@@ -187,7 +218,7 @@ function SettingBox({ title, items, onAdd, onDelete }) {
 
 
 /* ---------------------- OriginBox ---------------------- */
-function SettingOriginBox({ title, items, onSave, onDelete }) {
+function SettingOriginBox({ title, items, onSave, onDelete, onUpdate }) {
     const [form, setForm] = useState({
         name: "",
         api_endpoint: "",
@@ -196,15 +227,41 @@ function SettingOriginBox({ title, items, onSave, onDelete }) {
         api_key: "",
     });
 
+    // selected record
+    const [selectedId, setSelectedId] = useState(null);
+
+    // edit mode
+    const [isEditing, setIsEditing] = useState(false);
+
+    const selectedItem = items.find((i) => i.id === selectedId);
+
     const handleSubmit = () => {
         onSave(form);
         setForm({ name: "", api_endpoint: "", api_username: "", api_password: "", api_key: "" });
     };
 
+    const handleUpdate = () => {
+        onUpdate(selectedId, form);
+        setIsEditing(false);
+    };
+
+    const startEditing = () => {
+        if (!selectedItem) return;
+        setIsEditing(true);
+        setForm({ ...selectedItem });
+    };
+
+    // auto-select first item by default
+    useEffect(() => {
+        if (items.length > 0 && selectedId === null) {
+            setSelectedId(items[0].id);
+        }
+    }, [items]);
+
     return (
         <div className="bg-white shadow rounded-lg">
-            {/* ADD NEW ORIGIN */}
-            <div className="space-y-3 mb-4">
+            {/* ADD FORM */}
+            <div className="space-y-3 mb-6" align="right">
                 {["name", "api_endpoint", "api_username", "api_password", "api_key"].map((field) => (
                     <input
                         key={field}
@@ -223,26 +280,197 @@ function SettingOriginBox({ title, items, onSave, onDelete }) {
                 </button>
             </div>
 
-            {/* LIST */}
-            <ul className="space-y-2">
-                {items.map((i) => (
-                    <li key={i.id} className="p-3 border rounded">
-                        <div className="flex justify-between items-center">
-                            <span>{i.name}</span>
-                            <button className="text-red-600" onClick={() => onDelete(i.id)}>
-                                Delete
-                            </button>
-                        </div>
+            {/* ------------------ TWO COLUMN LAYOUT ------------------ */}
+            <div className="flex">
+                {/* LEFT LIST */}
+                <div className="w-48 border-r pr-4">
+                    <ul className="space-y-2">
+                        {items.map((i) => (
+                            <li key={i.id}>
+                                <button
+                                    className={`w-full text-left p-2 rounded ${
+                                        selectedId === i.id
+                                            ? "bg-blue-600 text-white"
+                                            : "bg-gray-100 hover:bg-gray-200"
+                                    }`}
+                                    onClick={() => {
+                                        setSelectedId(i.id);
+                                        setIsEditing(false);
+                                    }}
+                                >
+                                    {i.name}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
 
-                        <div className="text-xs text-gray-600 mt-2">
-                            <p>Endpoint: {i.api_endpoint || "—"}</p>
-                            <p>Username: {i.api_username || "—"}</p>
-                            <p>Password: {i.api_password ? "********" : "—"}</p>
-                            <p>API Key: {i.api_key ? "********" : "—"}</p>
-                        </div>
-                    </li>
-                ))}
-            </ul>
+                
+                <div className="flex-1 pl-6 border border-2">
+                    {!selectedItem ? (
+                        <p className="text-gray-500">Select an item from the left.</p>
+                    ) : (
+                        <>
+                            {/* HEADER */}
+                            <div className="flex justify-between items-center mb-4 px-2">
+                                <h3 className="text-lg font-semibold">&nbsp;</h3>
+
+                                <div className="flex gap-3">
+                                    <button
+                                        className="text-blue-600"
+                                        onClick={startEditing}
+                                    >
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        className="text-red-600"
+                                        onClick={() => onDelete(selectedItem.id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* VIEW MODE */}
+                            {!isEditing && (
+                                <div className="space-y-3 text-sm px-2">
+                                    <p><strong>Endpoint:</strong> {selectedItem.api_endpoint || "—"}</p>
+                                    <p><strong>Username:</strong> {selectedItem.api_username || "—"}</p>
+                                    <p><strong>Password:</strong> {selectedItem.api_password ? "********" : "—"}</p>
+                                    <p><strong>API Key:</strong> {selectedItem.api_key ? "********" : "—"}</p>
+                                </div>
+                            )}
+
+                            {/* EDIT MODE */}
+                            {isEditing && (
+                                <div className="space-y-3 text-sm">
+                                    {["name", "api_endpoint", "api_username", "api_password", "api_key"].map((field) => (
+                                        <input
+                                            key={field}
+                                            className="w-full border p-2 rounded"
+                                            placeholder={field.replace("_", " ").toUpperCase()}
+                                            value={form[field]}
+                                            onChange={(e) =>
+                                                setForm({ ...form, [field]: e.target.value })
+                                            }
+                                        />
+                                    ))}
+
+                                    <button
+                                        className="px-4 py-2 bg-green-600 text-white rounded"
+                                        onClick={handleUpdate}
+                                    >
+                                        Save Changes
+                                    </button>
+
+                                    <button
+                                        className="px-4 py-2 bg-gray-300 rounded ml-3"
+                                        onClick={() => setIsEditing(false)}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
+
+/* ---------------------- Settings ---------------------- */
+function SettingConfigBox({ items, onAdd, onUpdate, onDelete, onStatus }) {
+    const [form, setForm] = useState({ name: "", value: "" });
+    const [editId, setEditId] = useState(null);
+
+    const handleSubmit = () => {
+        onAdd(form);
+        setForm({ name: "", value: "" });
+    };
+
+    const handleUpdate = () => {
+        onUpdate(editId, form);
+        setEditId(null);
+        setForm({ name: "", value: "" });
+    };
+
+    const startEdit = (item) => {
+        setEditId(item.id);
+        setForm({ name: item.name, value: item.value });
+    };
+
+    return (
+        <div className="bg-white p-4 shadow rounded">
+
+            {/* ADD / EDIT FORM */}
+            <div className="flex gap-3 mb-4">
+                <input
+                    className="border p-2 rounded w-1/3"
+                    placeholder="Key (mobile/email/whatsapp)"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+
+                <input
+                    className="border p-2 rounded w-1/3"
+                    placeholder="Value"
+                    value={form.value}
+                    onChange={(e) => setForm({ ...form, value: e.target.value })}
+                />
+
+                {editId ? (
+                    <button className="px-4 bg-green-600 text-white rounded" onClick={handleUpdate}>
+                        Update
+                    </button>
+                ) : (
+                    <button className="px-4 bg-blue-600 text-white rounded" onClick={handleSubmit}>
+                        Add
+                    </button>
+                )}
+            </div>
+
+            {/* LIST */}
+            <table className="w-50 border">
+                <thead>
+                    <tr className="bg-gray-100">
+                        <th className="p-2 text-left">Key</th>
+                        <th className="p-2 text-left">Value</th>
+                        <th className="p-2 text-center">Status</th>
+                        <th className="p-2 text-center">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {items.map((i) => (
+                        <tr key={i.id} className="border-b">
+                            <td className="p-2">{i.name}</td>
+                            <td className="p-2">{i.value}</td>
+                            <td className="p-2 text-center">
+                                <button
+                                    className={`px-3 py-1 rounded text-white ${i.status ? 'bg-green-600' : 'bg-gray-500'}`}
+                                    onClick={() => onStatus(i.id)}
+                                >
+                                    {i.status ? "Active" : "Inactive"}
+                                </button>
+                            </td>
+
+                            <td className="p-2 text-center">
+                                <button className="text-blue-600 mr-3" onClick={() => startEdit(i)}>
+                                    Edit
+                                </button>
+
+                                <button className="text-red-600" onClick={() => onDelete(i.id)}>
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+

@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 
-
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use App\Models\Candidate;
+use App\Models\Origin;
+use App\Models\Documents;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,11 +19,46 @@ class CandidateApplicationProcessController extends Controller
 {
     
     //   Display a listing of the resource.
-     
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $query = Candidate::with([
+            'documents',
+            'origin',
+            'feedbacks.user',  // Load feedback + user who wrote it
+            'comments.user'    // Load comments + user who wrote it
+        ]);
+
+        if ($request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'LIKE', '%' . $request->search . '%')
+                  ->orWhere('email', 'LIKE', '%' . $request->search . '%')
+                  ->orWhere('mobile', 'LIKE', '%' . $request->search . '%');
+            });
+        }
+
+        $sortBy = $request->sort_by ?? 'id';
+        $sortOrder = $request->sort_order ?? 'desc';
+
+        $query->orderBy($sortBy, $sortOrder);
+
+        $candidates = $query->paginate(10)->withQueryString()->through(function ($c) {
+            $c->is_new = $c->created_at->gt(now()->subDays(1));
+            return $c;
+        });
+
+        return Inertia::render('CandidateApplicationProcess/Index', [
+            'candidates' => $candidates,
+            'statuses' => [
+                'Applied','Pending','In Review','Interviewed',
+                'Shortlisted','Selected','Rejected','Hired'
+            ],
+            'filters' => [
+                'search' => $request->search
+            ],
+        ]);
     }
+
+
 
     /**
      * Show the form for creating a new resource.

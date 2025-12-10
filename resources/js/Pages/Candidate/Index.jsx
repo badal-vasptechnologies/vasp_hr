@@ -145,7 +145,7 @@ export default function Index({ candidates, filters, origins, statuses, totalCou
                     </div>
 
                     <button
-                        onClick={() => router.get(route("candidate.import"))}
+                        onClick={() => router.get(route("process.index"))}
                         className="px-4 py-2 border border-blue-600 text-blue-600 rounded shadow-sm hover:bg-blue-600 hover:text-white transition"
                     >
                         Process Applications

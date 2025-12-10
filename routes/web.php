@@ -11,7 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SettingController;
-
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,6 +21,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
+
+Route::get('/storage-link', function () {
+    Artisan::call('storage:link');
+    return 'Storage link created successfully!';
+})->middleware(['auth']);      // protect it
 
 // Welcome page
 Route::get('/', function () {
@@ -63,7 +68,7 @@ Route::middleware('auth')->group(function () {
 
      // CandidateApplicationProcess
     //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'index'])->name('candidateapplicationprocess.index');    
-     Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'edit'])->name('candidateapplicationprocess.edit');
+     Route::get('/Application/Process', [CandidateApplicationProcessController::class, 'index'])->name('process.index');
     //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'update'])->name('candidateapplicationprocess.update');
     //  Route::get('/CandidateApplicationProcess', [CandidateApplicationProcessController::class, 'destroy'])->name('candidateapplicationprocess.destroy');
 
@@ -78,11 +83,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/Candidate', [CandidateController::class, 'index'])->name('candidate.index');
     Route::get('/Candidate/Create', [CandidateController::class, 'create'])->name('candidate.create');
     Route::post('/Candidate', [CandidateController::class, 'store'])->name('candidate.store');
-    Route::put('/Candidate/{candidate}', [CandidateController::class, 'update'])->name('candidate.update');
+    Route::post('/Candidate/{candidate}', [CandidateController::class, 'update'])->name('candidate.update');
     Route::get('/Candidate/{candidate}', [CandidateController::class, 'show'])->name('candidate.show');
     Route::get('/Candidate/{candidate}/Edit', [CandidateController::class, 'edit'])->name('candidate.edit');
     Route::delete('/Candidate/{candidate}', [CandidateController::class, 'destroy'])->name('candidate.destroy');
-    Route::post('/Candidate/{candidate}/Update-Status', [CandidateController::class, 'updateStatus'])->name('candidate.updateStatus');
+    Route::put('/candidates/{candidate}/status', [CandidateController::class, 'updateStatus'])->name('candidate.updateStatus');
+    Route::delete('/Candidate/Attachment/{id}', [CandidateController::class, 'deleteAttachment'])->name('candidate.attachment.delete');
+    Route::get('/Candidate/Search', [CandidateController::class, 'search'])->name('candidate.search');
+ 
+    Route::post('/Candidate/{id}/Feedback', [CandidateController::class, 'addFeedback'])->name('candidate.addFeedback');
+    Route::delete('/Candidate/Feedback/{id}', [CandidateController::class, 'deleteFeedback'])->name('candidate.deleteFeedback');
+    Route::post('/Candidate/{id}/Comment', [CandidateController::class, 'addComment'])->name('candidate.addComment');
+    Route::delete('/Candidate/Comment/{id}', [CandidateController::class, 'deleteComment'])->name('candidate.deleteComment');
+    Route::post('/Candidate/{id}/send-mail', [CandidateController::class, 'sendMail'])->name('candidate.sendMail');
+    Route::post('/Candidate/{id}/send-whatsapp', [CandidateController::class, 'sendWhatsApp'])->name('candidate.sendWhatsApp');
 
 
     // Setting
@@ -103,6 +117,13 @@ Route::middleware('auth')->group(function () {
     // WORK MODES
     Route::post('/Settings/Workmode', [SettingController::class, 'storeWorkMode'])->name('setting.workmode.store');
     Route::delete('/Settings/Workmode/{id}', [SettingController::class, 'deleteWorkMode'])->name('setting.workmode.delete');
+
+    // Settings Tab
+    Route::post('/Settings/config', [SettingController::class, 'storeConfig'])->name('setting.config.store');
+    Route::put('/Settings/config/{id}', [SettingController::class, 'updateConfig'])->name('setting.config.update');
+    Route::delete('/Settings/config/{id}', [SettingController::class, 'deleteConfig'])->name('setting.config.delete');
+    Route::patch('/Settings/config/{id}/status', [SettingController::class, 'toggleStatus'])->name('setting.config.status');
+
 
     // Application
     Route::get('/Application', [ApplicationController::class, 'index'])->name('application.index');

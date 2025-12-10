@@ -6,6 +6,7 @@ use App\Models\Origin;
 use App\Models\Department;
 use App\Models\Location;
 use App\Models\Workmode;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -18,6 +19,7 @@ class SettingController extends Controller
             'departments' => Department::all(),
             'locations' => Location::all(),
             'workModes' => Workmode::all(),
+            'settings' => Setting::all(),
             'success' => session('success'),
             'errors' => session('errors'),
         ]);
@@ -109,4 +111,49 @@ class SettingController extends Controller
         Workmode::findOrFail($id)->delete();
         return back()->with('success', 'Work mode deleted.');
     }
+
+    // SETTINGS CRUD
+    public function storeConfig(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'value' => 'required|string|max:500',
+        ]);
+
+        Setting::create([
+            'name' => $validated['name'],
+            'value' => $validated['value'],
+            'status' => 1,
+        ]);
+
+        return back()->with('success', 'Setting added.');
+    }
+
+    public function updateConfig(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'value' => 'required|string|max:500',
+        ]);
+
+        Setting::findOrFail($id)->update($validated);
+
+        return back()->with('success', 'Setting updated.');
+    }
+
+    public function deleteConfig($id)
+    {
+        Setting::findOrFail($id)->delete();
+        return back()->with('success', 'Setting deleted.');
+    }
+
+    public function toggleStatus($id)
+    {
+        $setting = Setting::findOrFail($id);
+        $setting->status = $setting->status ? 0 : 1;
+        $setting->save();
+
+        return back()->with('success', 'Status updated.');
+    }
+
 }

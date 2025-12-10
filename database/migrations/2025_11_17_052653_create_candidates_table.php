@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->enum('status', ['Pending', 'Shortlisted', 'Rejected', 'Selected'])->default('Pending');
             $table->date('date_of_apply');
-            $table->foreignId('origin_id')->nullable()->constrained('origins')->nullOnDelete();
+            $table->integer('origin_id')->default(0);
             $table->timestamps();
         });
     }

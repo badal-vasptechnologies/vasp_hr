@@ -1,191 +1,283 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router, Link } from '@inertiajs/react';
 import { useState } from 'react';
 
-export default function CandidateDetails() {
-    // Static candidate data — edit these fields to test the UI
-    const candidate = {
-        name: 'Rahul Sharma',
-        email: 'rahul.sharma@gmail.com',
-        phone: '+91 98765 43210',
-        address: 'Guwahati',
-        feedback:
-            'Strong communication skills and good technical knowledge in React & Laravel.',
-        remarks: 'Recommended for next round after technical discussion.',
+export default function Edit({ candidate, statuses, origins }) {
+
+    const [attachments, setAttachments] = useState([]);
+    const [existingAttachments, setExistingAttachments] = useState(candidate.documents || []);
+
+    const [values, setValues] = useState({
+        name: candidate?.name || "",
+        email: candidate?.email || "",
+        mobile: candidate?.mobile || "",
+        address: candidate?.address || "",
+        status: candidate?.status || "Pending",
+        date_of_apply: candidate?.date_of_apply || "",
+        origin_id: candidate?.origin_id || "",
+    });
+
+    const handleChange = (e) => {
+        setValues({
+            ...values,
+            [e.target.name]: e.target.value
+        });
     };
 
-    const [lastAction, setLastAction] = useState(null);
+    const handleAttachments = (files) => {
+        setAttachments((prev) => [...prev, ...files]);
+    };
 
-    const handleAction = (type) => {
-        // For now just set local state and log — replace with API calls later
-        setLastAction(type);
-        console.log('Action Selected:', type);
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        Object.keys(values).forEach((key) => formData.append(key, values[key]));
+
+        attachments.forEach((file) => formData.append("attachments[]", file));
+
+        router.post(route("candidate.update", candidate.id), formData, {
+            forceFormData: true,
+        });
     };
 
     return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Candidate Details
-                </h2>
-            }
-        >
-            <Head title="Candidate Details" />
+        <AuthenticatedLayout>
+            <Head title="Edit Candidate" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-5xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-6 shadow sm:rounded-lg dark:bg-gray-800">
-                        <h2 className="mb-6 text-lg font-bold text-gray-900 dark:text-gray-100">
-                            Candidate Information
-                        </h2>
+            {/* Header */}
+            <div className="max-w-5xl mx-auto mb-6 flex justify-between items-center bg-white shadow p-6 rounded">
+                <h2 className="text-2xl font-semibold text-black">Edit Candidate</h2>
 
-                        <div className="grid grid-cols-1 gap-4 text-gray-800 sm:grid-cols-2 dark:text-gray-200">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                    Name
-                                </p>
-                                <p className="mt-1 text-gray-900 dark:text-gray-100">
-                                    {candidate.name}
-                                </p>
-                            </div>
+                <button
+                    onClick={() => router.get(route("candidate.index"))}
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded shadow hover:bg-gray-300"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                    >
+                        <path
+                            fillRule="evenodd"
+                            d="M12.293 16.293a1 1 0 010 1.414 1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 111.414 1.414L7.414 10l4.879 4.879z"
+                            clipRule="evenodd"
+                        />
+                    </svg>
+                    Back
+                </button>
+            </div>
 
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                    Email
-                                </p>
-                                <p className="mt-1 text-gray-900 dark:text-gray-100">
-                                    {candidate.email}
-                                </p>
-                            </div>
+            {/* Main Two Column Layout */}
+            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                    Phone
-                                </p>
-                                <p className="mt-1 text-gray-900 dark:text-gray-100">
-                                    {candidate.phone}
-                                </p>
-                            </div>
+                {/* Left Form */}
+                <div className="bg-white shadow p-6 rounded">
+                    <form onSubmit={handleSubmit} className="space-y-4">
 
-                            <div>
-                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                    Address
-                                </p>
-                                <p className="mt-1 text-gray-900 dark:text-gray-100">
-                                    {candidate.address}
-                                </p>
-                            </div>
+                        {/* Name */}
+                        <div>
+                            <label className="block mb-1 font-semibold">Name</label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={values.name}
+                                onChange={handleChange}
+                                className="w-full border rounded p-2"
+                            />
                         </div>
 
-                        <div className="mt-6">
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                Feedback
-                            </p>
-                            <div className="mt-1 rounded-md bg-gray-50 p-3 dark:bg-gray-700">
-                                <p className="text-gray-800 dark:text-gray-200">
-                                    {candidate.feedback}
-                                </p>
-                            </div>
+                        {/* Email */}
+                        <div>
+                            <label className="block mb-1 font-semibold">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={values.email}
+                                onChange={handleChange}
+                                className="w-full border rounded p-2"
+                            />
                         </div>
 
-                        <div className="mt-4">
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                Remarks
-                            </p>
-                            <div className="mt-1 rounded-md bg-gray-50 p-3 dark:bg-gray-700">
-                                <p className="text-gray-800 dark:text-gray-200">
-                                    {candidate.remarks}
-                                </p>
-                            </div>
+                        {/* Mobile */}
+                        <div>
+                            <label className="block mb-1 font-semibold">Mobile</label>
+                            <input
+                                type="text"
+                                name="mobile"
+                                value={values.mobile}
+                                onChange={handleChange}
+                                className="w-full border rounded p-2"
+                            />
                         </div>
 
-                        <div className="mt-10">
-                            <p className="mb-2 text-sm font-medium text-gray-600 dark:text-gray-300">
-                                Resume Preview
-                            </p>
+                        {/* Address */}
+                        <div>
+                            <label className="block mb-1 font-semibold">Address</label>
+                            <textarea
+                                name="address"
+                                value={values.address}
+                                onChange={handleChange}
+                                className="w-full border rounded p-2"
+                            />
+                        </div>
 
-                            {/* PDF Preview */}
-                            {candidate.resume &&
-                                candidate.resume.endsWith('.pdf') && (
-                                    <iframe
-                                        src={candidate.resume}
-                                        title="Resume Preview"
-                                        className="h-96 w-full rounded-lg border"
-                                    ></iframe>
-                                )}
+                        {/* Status */}
+                        <div>
+                            <label className="block mb-1 font-semibold">Status</label>
+                            <select
+                                name="status"
+                                value={values.status}
+                                onChange={handleChange}
+                                className="w-full border rounded p-2"
+                            >
+                                {statuses.map((st) => (
+                                    <option value={st} key={st}>{st}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                            {/* DOCX Preview */}
-                            {candidate.resume &&
-                                candidate.resume.endsWith('.docx') && (
-                                    <div className="rounded-md bg-yellow-100 p-4 text-sm text-gray-800 dark:bg-yellow-700 dark:text-gray-200">
-                                        <p>
-                                            DOCX preview is not supported
-                                            directly in browser.
-                                        </p>
-                                        <p className="mt-1">
-                                            You can download and view it
-                                            locally:
-                                        </p>
-                                        <a
-                                            href={candidate.resume}
-                                            download
-                                            className="mt-3 inline-block rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                                        >
-                                            Download Resume (.docx)
-                                        </a>
-                                    </div>
-                                )}
+                        {/* Date */}
+                        <div>
+                            <label className="block mb-1 font-semibold">Date of Apply</label>
+                            <input
+                                type="date"
+                                name="date_of_apply"
+                                value={values.date_of_apply}
+                                onChange={handleChange}
+                                className="w-full border rounded p-2"
+                            />
+                        </div>
 
-                            {/* If no resume */}
-                            {!candidate.resume && (
-                                <div className="mt-4 rounded-md bg-neutral-700 p-4 text-center text-sm text-red-700 dark:bg-neutral-800 dark:text-red-200">
-                                    No Resume Found
-                                    <a
-                                        href="#"
-                                        className="ml-3 rounded-md bg-orange-600 px-3 py-1 text-xs text-white hover:bg-orange-700"
+                        {/* Origin */}
+                        <div>
+                            <label className="block mb-1 font-semibold">Origin</label>
+                            <select
+                                name="origin_id"
+                                value={values.origin_id}
+                                onChange={handleChange}
+                                className="w-full border rounded p-2"
+                            >
+                                <option value="">Select Origin</option>
+                                {origins.map((origin) => (
+                                    <option key={origin.id} value={origin.id}>
+                                        {origin.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="flex justify-end space-x-2 pt-3">
+                            <Link
+                                href={route("candidate.index")}
+                                className="px-4 py-2 bg-gray-400 text-white rounded"
+                            >
+                                Cancel
+                            </Link>
+
+                            <button
+                                type="submit"
+                                className="px-4 py-2 bg-blue-600 text-white rounded"
+                            >
+                                Update
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                {/* Right Attachments Section */}
+                <div className="bg-white shadow p-6 rounded min-h-[500px] flex flex-col">
+                    <h3 className="text-lg font-semibold mb-3">Attachments</h3>
+
+                    {/* Existing stored files */}
+                    {existingAttachments.length > 0 && (
+                        <div className="mb-4 border rounded p-3 max-h-48 overflow-y-auto">
+                            <h4 className="text-sm font-semibold mb-2">Existing Files</h4>
+
+                            <ul className="space-y-1">
+                                {existingAttachments.map((file) => (
+                                    <li
+                                        key={file.id}
+                                        className="flex justify-between text-sm text-gray-700"
                                     >
-                                        Add Resume
-                                    </a>
-                                </div>
-                            )}
+                                        <a
+                                            href={`/storage/${file.file_path}`}
+                                            target="_blank"
+                                            className="text-blue-600 underline"
+                                        >
+                                            📄 {file.file_type}
+                                        </a>
+
+                                        <button
+                                            className="text-red-600"
+                                            onClick={() =>
+                                                router.delete(route("candidate.attachment.delete", file.id), {
+                                                    onSuccess: () => {
+                                                        setExistingAttachments(
+                                                            existingAttachments.filter((x) => x.id !== file.id)
+                                                        );
+                                                    },
+                                                })
+                                            }
+                                        >
+                                            Delete
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
+                    )}
 
-                        <div className="mt-8 flex flex-wrap gap-4">
-                            <button
-                                type="button"
-                                onClick={() => handleAction('accepted')}
-                                className="rounded-lg bg-green-600 px-5 py-2 text-white hover:bg-green-700 focus:outline-none"
-                            >
-                                Accept
-                            </button>
+                    {/* Upload new files */}
+                    <div
+                        className="border-2 border-dashed border-gray-400 hover:bg-gray-50 transition flex-1 p-4 rounded text-center flex flex-col items-center justify-center"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                            e.preventDefault();
+                            handleAttachments(Array.from(e.dataTransfer.files));
+                        }}
+                    >
+                        <p className="text-gray-600 mb-3">Drag & drop files here</p>
 
-                            <button
-                                type="button"
-                                onClick={() => handleAction('rejected')}
-                                className="rounded-lg bg-red-600 px-5 py-2 text-white hover:bg-red-700 focus:outline-none"
-                            >
-                                Reject
-                            </button>
+                        <label className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded">
+                            Browse Files
+                            <input
+                                type="file"
+                                multiple
+                                className="hidden"
+                                onChange={(e) => handleAttachments(Array.from(e.target.files))}
+                            />
+                        </label>
+                    </div>
 
-                            <button
-                                type="button"
-                                onClick={() => handleAction('schedule_meeting')}
-                                className="rounded-lg bg-blue-700 px-5 py-2 text-white hover:bg-blue-900 focus:outline-none"
-                            >
-                                Schedule Meeting
-                            </button>
+                    {/* Newly added files */}
+                    <div className="mt-4 max-h-48 overflow-y-auto border rounded p-2">
+                        {attachments.length === 0 && (
+                            <p className="text-gray-500 text-sm">No new files</p>
+                        )}
 
-                            {lastAction && (
-                                <div className="mt-4 w-full text-sm text-gray-700 dark:text-gray-200">
-                                    Last action:{' '}
-                                    <span className="font-semibold">
-                                        {lastAction}
-                                    </span>
-                                </div>
-                            )}
-                        </div>
+                        <ul className="space-y-1">
+                            {attachments.map((file, index) => (
+                                <li key={index} className="flex justify-between text-sm text-gray-700">
+                                    📄 {file.name}
+                                    <button
+                                        className="text-red-600"
+                                        onClick={() =>
+                                            setAttachments(attachments.filter((_, i) => i !== index))
+                                        }
+                                    >
+                                        Remove
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
+
+
             </div>
         </AuthenticatedLayout>
     );

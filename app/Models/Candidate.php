@@ -23,4 +23,21 @@ class Candidate extends Model
     {
         return $this->belongsTo(Origin::class, 'origin_id');
     }
+
+    public function documents()
+    {
+        return $this->hasMany(Documents::class, 'candidate_id');
+    }
+
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+
 }

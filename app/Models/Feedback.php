@@ -4,7 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Feedback extends Model
-{
-    //
+class Feedback extends Model {
+    protected $fillable = ['candidate_id','user_id','message'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function candidate()
+    {
+        return $this->belongsTo(Candidate::class);
+    }
 }
+

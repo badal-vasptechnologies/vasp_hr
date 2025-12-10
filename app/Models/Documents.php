@@ -15,4 +15,9 @@ class Documents extends Model
         'file_type',
         'status'
     ];
+
+    public function candidate()
+	{
+	    return $this->belongsTo(Candidate::class);
+	}
 }

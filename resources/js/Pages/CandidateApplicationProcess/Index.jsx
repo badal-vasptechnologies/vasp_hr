@@ -12,6 +12,10 @@ export default function Dashboard({ candidates, filters, statuses }) {
     const [commentText, setCommentText] = useState("");
     const [openMail, setOpenMail] = useState(false);
     const [openWhatsApp, setOpenWhatsApp] = useState(false);
+    const [showMeetingModal, setShowMeetingModal] = useState(false);
+    const [platform, setPlatform] = useState("zoom");
+    const [meetingDate, setMeetingDate] = useState("");
+
 
     // Store only selectedCandidateId
     const [selectedCandidateId, setSelectedCandidateId] = useState(() => {
@@ -152,7 +156,88 @@ export default function Dashboard({ candidates, filters, statuses }) {
                                         </button>
                                     </div>
 
-                                    <button className="px-2 py-1 bg-blue-100 text-blue-700 rounded">Meeting</button>
+                                    <button
+                                        className="px-2 py-1 bg-blue-100 text-blue-700 rounded"
+                                        onClick={() => setShowMeetingModal(true)}
+                                    >
+                                        Meeting
+                                    </button>
+                                    {showMeetingModal && (
+                                    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                                        <div className="bg-white p-6 rounded shadow-xl w-96">
+
+                                            <h3 className="text-xl font-semibold mb-4">
+                                                Schedule Meeting
+                                            </h3>
+
+                                            {/* Select Platform */}
+                                            <label className="block mb-3">
+                                                <span className="text-gray-700">Choose Platform</span>
+                                                <select
+                                                    value={platform}
+                                                    onChange={(e) => setPlatform(e.target.value)}
+                                                    className="w-full border p-2 rounded mt-1"
+                                                >
+                                                    <option value="zoom">Zoom</option>
+                                                    <option value="google">Google Meet</option>
+                                                </select>
+                                            </label>
+
+                                            {/* Date & Time */}
+                                            <label className="block mb-3">
+                                                <span className="text-gray-700">Meeting Date & Time</span>
+                                                <input
+                                                    type="datetime-local"
+                                                    className="w-full border p-2 rounded mt-1"
+                                                    value={meetingDate}
+                                                    onChange={(e) => setMeetingDate(e.target.value)}
+                                                />
+                                            </label>
+
+                                            {/* Email (disabled) */}
+                                            <label className="block mb-3">
+                                                <span className="text-gray-700">Candidate Email</span>
+                                                <input
+                                                    type="email"
+                                                    disabled
+                                                    value={selectedCandidate.email}
+                                                    className="w-full border p-2 rounded mt-1 bg-gray-100"
+                                                />
+                                            </label>
+
+                                            {/* Buttons */}
+                                            <div className="flex justify-end gap-3 mt-6">
+                                                <button
+                                                    onClick={() => setShowMeetingModal(false)}
+                                                    className="px-3 py-1 border rounded"
+                                                >
+                                                    Cancel
+                                                </button>
+
+                                                <button
+                                                    onClick={() => {
+                                                        router.post(
+                                                            route("meeting.schedule", selectedCandidate.id),
+                                                            {
+                                                                platform,
+                                                                start_time: meetingDate,
+                                                            },
+                                                            {
+                                                                onSuccess: () => {
+                                                                    setShowMeetingModal(false);
+                                                                }
+                                                            }
+                                                        );
+                                                    }}
+                                                    className="px-4 py-1 bg-blue-600 text-white rounded"
+                                                >
+                                                    Schedule
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                     <button className="px-2 py-1 bg-green-100 text-green-700 rounded">Onboarding</button>
                                     <button className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded">Call</button>
                                     <button
@@ -506,3 +591,78 @@ function WhatsAppModal({ selectedCandidate, setOpenWhatsApp }) {
         </div>
     );
 }
+
+function MeetingModal({ selectedCandidate, setOpenMeeting }) {
+    const [platform, setPlatform] = useState("");
+    const [date, setDate] = useState("");
+
+    const createMeeting = () => {
+        if (!platform || !date) {
+            alert("Please select platform and date/time");
+            return;
+        }
+
+        router.post(
+            route('candidate.createMeeting', selectedCandidate.id),
+            {
+                platform,
+                date,
+                email: selectedCandidate.email,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => setOpenMeeting(false),
+            }
+        );
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg p-6 w-[500px]">
+                <h2 className="text-xl font-semibold mb-4">Schedule Meeting</h2>
+
+                {/* Platform */}
+                <div className="mb-3">
+                    <label className="block mb-1 font-medium">Platform</label>
+                    <select
+                        value={platform}
+                        onChange={(e) => setPlatform(e.target.value)}
+                        className="w-full border rounded p-2"
+                    >
+                        <option value="">Select Platform</option>
+                        <option value="zoom">Zoom</option>
+                        <option value="google_meet">Google Meet</option>
+                    </select>
+                </div>
+
+                {/* Date / Time */}
+                <div className="mb-3">
+                    <label className="block mb-1 font-medium">Meeting Date</label>
+                    <input
+                        type="datetime-local"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        className="w-full border rounded p-2"
+                    />
+                </div>
+
+                <div className="flex justify-end gap-2">
+                    <button
+                        className="px-3 py-1 bg-gray-200 rounded"
+                        onClick={() => setOpenMeeting(false)}
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        className="px-3 py-1 bg-blue-600 text-white rounded"
+                        onClick={createMeeting}
+                    >
+                        Create Meeting
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+

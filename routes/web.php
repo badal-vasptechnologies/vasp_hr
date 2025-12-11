@@ -11,10 +11,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\MeetingController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Google\Client;
 
 
 use Illuminate\Http\Request;
@@ -97,6 +99,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/Candidate/Comment/{id}', [CandidateController::class, 'deleteComment'])->name('candidate.deleteComment');
     Route::post('/Candidate/{id}/send-mail', [CandidateController::class, 'sendMail'])->name('candidate.sendMail');
     Route::post('/Candidate/{id}/send-whatsapp', [CandidateController::class, 'sendWhatsApp'])->name('candidate.sendWhatsApp');
+    Route::post('Meeting/schedule/{candidate}', [MeetingController::class, 'schedule'])
+    ->name('meeting.schedule');
+
 
 
     // Setting
@@ -141,6 +146,40 @@ Route::middleware('auth')->group(function () {
     Route::get('/Reports', [ReportsController::class, 'index'])->name('reports.index');
 
     Route::apiResource('departments', DepartmentController::class);
+
+    Route::get('/google/auth', function () {
+        $client = new Google\Client();
+        $client->setAuthConfig(storage_path('app/google_credentials.json'));
+        $client->addScope(Google\Service\Calendar::CALENDAR);
+        $client->setRedirectUri('https://vh.laksvrddhi.com/google/callback');
+        $client->setAccessType('offline'); // request refresh token
+        $authUrl = $client->createAuthUrl();
+
+        return redirect($authUrl);
+    });
+
+
+    Route::get('/google/callback', function (Request $request) {
+        $client = new Client();
+        $client->setAuthConfig(storage_path('app/google_credentials.json'));
+        $client->setRedirectUri('https://vh.laksvrddhi.com/google/callback');
+        $client->addScope(\Google\Service\Calendar::CALENDAR);
+        $client->setAccessType('offline');
+        $client->setPrompt('consent'); // ensure refresh token is returned
+
+        // Use $request->code here, not in the service
+        $token = $client->fetchAccessTokenWithAuthCode($request->code);
+
+        if (isset($token['error'])) {
+            dd($token);
+        }
+
+        file_put_contents(storage_path('app/google_token.json'), json_encode($token));
+
+        return 'Google OAuth success, token saved!';
+    });
+
+
 
 });
 

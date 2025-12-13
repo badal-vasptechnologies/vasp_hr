@@ -69,6 +69,18 @@ export default function Dashboard({ candidates, filters, statuses }) {
         }
     };
 
+    const deleteMeeting = (id) => {
+        if (!confirm("Are you sure you want to delete this meeting?")) return;
+
+        router.delete(route("meeting.destroy", id), {
+            onSuccess: () => {
+                alert("Meeting deleted successfully");
+            },
+        });
+    };
+
+
+
     return (
         <AuthenticatedLayout>
             <Head title="Candidates Dashboard" />
@@ -162,82 +174,119 @@ export default function Dashboard({ candidates, filters, statuses }) {
                                     >
                                         Meeting
                                     </button>
+                                    
                                     {showMeetingModal && (
-                                    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                                        <div className="bg-white p-6 rounded shadow-xl w-96">
+                                        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                                            <div className="bg-white p-6 rounded shadow-xl w-[420px] max-h-[90vh] overflow-y-auto">
 
-                                            <h3 className="text-xl font-semibold mb-4">
-                                                Schedule Meeting
-                                            </h3>
+                                                <h3 className="text-xl font-semibold mb-4">Schedule Meeting</h3>
 
-                                            {/* Select Platform */}
-                                            <label className="block mb-3">
-                                                <span className="text-gray-700">Choose Platform</span>
-                                                <select
-                                                    value={platform}
-                                                    onChange={(e) => setPlatform(e.target.value)}
-                                                    className="w-full border p-2 rounded mt-1"
-                                                >
-                                                    <option value="zoom">Zoom</option>
-                                                    <option value="google">Google Meet</option>
-                                                </select>
-                                            </label>
+                                                {/* Select Platform */}
+                                                <label className="block mb-3">
+                                                    <span className="text-gray-700">Choose Platform</span>
+                                                    <select
+                                                        value={platform}
+                                                        onChange={(e) => setPlatform(e.target.value)}
+                                                        className="w-full border p-2 rounded mt-1"
+                                                    >
+                                                        <option value="zoom">Zoom</option>
+                                                        <option value="google">Google Meet</option>
+                                                    </select>
+                                                </label>
 
-                                            {/* Date & Time */}
-                                            <label className="block mb-3">
-                                                <span className="text-gray-700">Meeting Date & Time</span>
-                                                <input
-                                                    type="datetime-local"
-                                                    className="w-full border p-2 rounded mt-1"
-                                                    value={meetingDate}
-                                                    onChange={(e) => setMeetingDate(e.target.value)}
-                                                />
-                                            </label>
+                                                {/* Date & Time */}
+                                                <label className="block mb-3">
+                                                    <span className="text-gray-700">Meeting Date & Time</span>
+                                                    <input
+                                                        type="datetime-local"
+                                                        className="w-full border p-2 rounded mt-1"
+                                                        value={meetingDate}
+                                                        onChange={(e) => setMeetingDate(e.target.value)}
+                                                    />
+                                                </label>
 
-                                            {/* Email (disabled) */}
-                                            <label className="block mb-3">
-                                                <span className="text-gray-700">Candidate Email</span>
-                                                <input
-                                                    type="email"
-                                                    disabled
-                                                    value={selectedCandidate.email}
-                                                    className="w-full border p-2 rounded mt-1 bg-gray-100"
-                                                />
-                                            </label>
+                                                {/* Email */}
+                                                <label className="block mb-3">
+                                                    <span className="text-gray-700">Candidate Email</span>
+                                                    <input
+                                                        type="email"
+                                                        disabled
+                                                        value={selectedCandidate.email}
+                                                        className="w-full border p-2 rounded mt-1 bg-gray-100"
+                                                    />
+                                                </label>
 
-                                            {/* Buttons */}
-                                            <div className="flex justify-end gap-3 mt-6">
-                                                <button
-                                                    onClick={() => setShowMeetingModal(false)}
-                                                    className="px-3 py-1 border rounded"
-                                                >
-                                                    Cancel
-                                                </button>
+                                                {/* Buttons */}
+                                                <div className="flex justify-end gap-3 mt-4 mb-6">
+                                                    <button
+                                                        onClick={() => setShowMeetingModal(false)}
+                                                        className="px-3 py-1 border rounded"
+                                                    >
+                                                        Cancel
+                                                    </button>
 
-                                                <button
-                                                    onClick={() => {
-                                                        router.post(
-                                                            route("meeting.schedule", selectedCandidate.id),
-                                                            {
-                                                                platform,
-                                                                start_time: meetingDate,
-                                                            },
-                                                            {
-                                                                onSuccess: () => {
-                                                                    setShowMeetingModal(false);
-                                                                }
-                                                            }
-                                                        );
-                                                    }}
-                                                    className="px-4 py-1 bg-blue-600 text-white rounded"
-                                                >
-                                                    Schedule
-                                                </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            router.post(
+                                                                route("meeting.schedule", selectedCandidate.id),
+                                                                {
+                                                                    platform,
+                                                                    start_time: meetingDate,
+                                                                },
+                                                                { onSuccess: () => setShowMeetingModal(false) }
+                                                            );
+                                                        }}
+                                                        className="px-4 py-1 bg-blue-600 text-white rounded"
+                                                    >
+                                                        Schedule
+                                                    </button>
+                                                </div>
+
+                                                {/* ─────────────────────────── */}
+                                                {/* EXISTING MEETINGS SECTION */}
+                                                {/* ─────────────────────────── */}
+                                                <div className="border rounded p-3">
+                                                    <h4 className="text-lg font-semibold mb-3">Scheduled Meetings</h4>
+
+                                                    {selectedCandidate.meetings?.length === 0 && (
+                                                        <p className="text-gray-500 text-sm">No meetings found.</p>
+                                                    )}
+
+                                                    {selectedCandidate.meetings?.map((meeting) => (
+                                                        <div
+                                                            key={meeting.id}
+                                                            className="flex items-center justify-between border-b last:border-0 py-2"
+                                                        >
+                                                            <div>
+                                                                <p className="font-semibold">{meeting.title}</p>
+
+                                                                <p className="text-sm text-gray-600">
+                                                                    {meeting.date} — {meeting.time}
+                                                                </p>
+
+                                                                <a
+                                                                    href={route("meeting.show", meeting.id)}
+                                                                    className="text-blue-600 text-sm underline mt-1 inline-block"
+                                                                >
+                                                                    View Meeting
+                                                                </a>
+                                                            </div>
+
+                                                            <button
+                                                                onClick={() => deleteMeeting(meeting.id)}
+                                                                className="text-red-600 hover:text-red-800 text-sm"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
+                                    
                                     <button className="px-2 py-1 bg-green-100 text-green-700 rounded">Onboarding</button>
                                     <button className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded">Call</button>
                                     <button

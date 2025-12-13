@@ -16,5 +16,10 @@ class Comment extends Model {
     {
         return $this->belongsTo(Candidate::class);
     }
+
+	public function meeting()
+	{
+	    return $this->belongsTo(Meeting::class);
+	}
 }
 

@@ -17,6 +17,11 @@ class Meeting extends Model
 
     public function candidate()
     {
-        return $this->belongsTo(Candidate::class);
+        return $this->belongsTo(Candidate::class,);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

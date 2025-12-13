@@ -23,6 +23,7 @@ class CandidateApplicationProcessController extends Controller
     {
         $query = Candidate::with([
             'documents',
+            'meetings',
             'origin',
             'feedbacks.user',  // Load feedback + user who wrote it
             'comments.user'    // Load comments + user who wrote it
@@ -45,7 +46,7 @@ class CandidateApplicationProcessController extends Controller
             $c->is_new = $c->created_at->gt(now()->subDays(1));
             return $c;
         });
-
+        
         return Inertia::render('CandidateApplicationProcess/Index', [
             'candidates' => $candidates,
             'statuses' => [

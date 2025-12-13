@@ -7,9 +7,28 @@ use App\Models\Candidate;
 use App\Models\Meeting;
 use App\Services\ZoomService;
 use App\Services\GoogleService;
+use Inertia\Inertia;
 
 class MeetingController extends Controller
 {
+	public function show($id)
+	{
+	    $meeting = Meeting::with(['candidate.comments.user'])->findOrFail($id);
+	    // dd($meeting);
+	    return Inertia::render('Meetings/Show', [
+	        'meeting' => $meeting
+	    ]);
+	}
+
+	public function destroy($id)
+	{
+	    $meeting = Meeting::findOrFail($id);
+	    $meeting->delete();
+
+	    return back()->with('success', 'Meeting deleted successfully');
+	}
+
+
     public function schedule(Request $request, Candidate $candidate, ZoomService $zoom, GoogleService $google)
 	{
 	    $request->validate([

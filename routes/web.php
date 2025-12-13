@@ -99,9 +99,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/Candidate/Comment/{id}', [CandidateController::class, 'deleteComment'])->name('candidate.deleteComment');
     Route::post('/Candidate/{id}/send-mail', [CandidateController::class, 'sendMail'])->name('candidate.sendMail');
     Route::post('/Candidate/{id}/send-whatsapp', [CandidateController::class, 'sendWhatsApp'])->name('candidate.sendWhatsApp');
-    Route::post('Meeting/schedule/{candidate}', [MeetingController::class, 'schedule'])
+    Route::post('/Meeting/schedule/{candidate}', [MeetingController::class, 'schedule'])
     ->name('meeting.schedule');
 
+    Route::get('/Meeting/{id}', [MeetingController::class, 'show'])->name('meeting.show');
+    Route::delete('/Meeting/{id}', [MeetingController::class, 'destroy'])->name('meeting.destroy');
 
 
     // Setting
